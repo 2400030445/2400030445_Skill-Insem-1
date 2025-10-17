@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Git Branching & Merge Conflict Demo</title>
+    <style>
+        body {
+            font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+            margin: 24px;
+            color: #111
+        }
+
+        pre {
+            background: #0b1220;
+            color: #e6edf3;
+            padding: 16px;
+            border-radius: 8px;
+            overflow: auto
+        }
+
+        code {
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', 'Ubuntu Mono', monospace
+        }
+
+        h1,
+        h2 {
+            color: #0b3b6f
+        }
+
+        .box {
+            background: #f6f9fc;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px
+        }
+
+        .note {
+            font-size: 0.9rem;
+            color: #444;
+            border-left: 4px solid #ffdd57;
+            padding: 8px 12px;
+            background: #fffbea;
+            border-radius: 4px
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Git Branching & Merge Conflict — Full demo (HTML)</h1>
+    <p>This single-file demo shows the files and terminal commands to reproduce the scenario described in
+        <strong>Question 8</strong>:
+        two developers (Alice and Bob) edit the same function in <code>App.js</code> on separate branches
+        (<code>feature1</code> and <code>feature2</code>), then both branches are merged into <code>main</code> causing
+        a merge conflict that we resolve manually.</p>
+
+    <h2>How to use</h2>
+    <div class="box">
+        <ol>
+            <li>Copy the terminal command section below and run it in an empty project folder (or adapt to your repo).
+            </li>
+            <li>Open the project in Visual Studio Code. When the conflict happens, use the Git -> Merge Editor or
+                resolve by editing the file directly.</li>
+            <li>After resolving, add, commit, and push the final result to your remote.</li>
+        </ol>
+    </div>
+
+    <h2>1) Initial repository & base <code>App.js</code></h2>
+    <p>Base file (on <code>main</code> initially):</p>
+    <pre><code>// App.js (base on main)
+function greet() {
+  // This function will be modified by both Alice and Bob in different branches
+  return 'Hello from main';
+}
+
+console.log(greet());
+</code></pre>
+
+    <h2>2) Alice's changes (branch: <code>feature1</code>)</h2>
+    <p>Alice edits the function to add a name parameter and a friendly message:</p>
+    <pre><code>// App.js (feature1 - Alice)
+function greet(name) {
+  return `Hello, ${name}! Welcome to our app. -- from Alice`;
+}
+
+console.log(greet('Alice'));
+</code></pre>
+
+    <h2>3) Bob's changes (branch: <code>feature2</code>)</h2>
+    <p>Bob edits the same function differently (same function block modified):</p>
+    <pre><code>// App.js (feature2 - Bob)
+function greet(name) {
+  // Bob wants a different default message and timestamp
+  const who = name || 'Guest';
+  return `Hi ${who}. Current year is ${new Date().getFullYear()}. -- from Bob`;
+}
+
+console.log(greet('Bob'));
+</code></pre>
+
+    <h2>4) What a merge conflict looks like (after merging both branches into <code>main</code>)</h2>
+    <p>If you try to merge both commits into <code>main</code> without resolving, Git will mark <code>App.js</code> with
+        conflict markers like this:</p>
+    <pre><code>// App.js (conflict markers inserted by git)
+<<<<<<< HEAD
+function greet(name) {
+  return `Hello, ${name}! Welcome to our app. -- from Alice`;
+}
+=======
+function greet(name) {
+  // Bob wants a different default message and timestamp
+  const who = name || 'Guest';
+  return `Hi ${who}. Current year is ${new Date().getFullYear()}. -- from Bob`;
+}
+>>>>>>> feature2
+
+console.log(greet('Someone'));
+</code></pre>
+
+    <h2>5) Resolved version (manual resolution)</h2>
+    <p>Example of a manual resolution that merges both intentions: keep the parameter and defaulting behavior, include
+        year and a friendly message, and attribute both authors in a comment.</p>
+    <pre><code>// App.js (resolved)
+function greet(name) {
+  const who = name || 'Guest';
+  // Combined message: friendly greeting + year + attribution
+  return `Hello, ${who}! Current year is ${new Date().getFullYear()}. (Alice & Bob)`;
+}
+
+console.log(greet('Visitor'));
+</code></pre>
+
+    <h2>6) Step-by-step terminal commands</h2>
+    <p>Run these commands in a new folder to reproduce everything locally (adapt usernames/emails as needed):</p>
+    <pre><code># 1) init repo and create base file
+mkdir git-conflict-demo
+cd git-conflict-demo
+git init
+cat &gt; App.js &lt;&lt;'JS'
+function greet() {
+  return 'Hello from main';
+}
+
+console.log(greet());
+JS
+
+git add App.js
+git commit -m "Initial commit: base App.js"
+
+# 2) Create Alice's branch and commit
+git checkout -b feature1
+cat &gt; App.js &
