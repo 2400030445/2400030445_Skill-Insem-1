@@ -1,0 +1,35 @@
+# Start
+git init
+touch App.js   # or create in VS Code
+git add App.js
+git commit -m "Initial commit with App.js"
+
+# Feature1 (Alice)
+git checkout -b feature1
+# edit file...
+git add App.js
+git commit -m "Alice changed greet() in feature1"
+
+# Feature2 (Bob)
+git checkout main
+git checkout -b feature2
+# edit file...
+git add App.js
+git commit -m "Bob changed greet() in feature2"
+
+# Merge into main
+git checkout main
+git merge feature1
+git merge feature2    # conflict
+
+# Resolve conflict (edit App.js), then:
+git add App.js
+git commit -m "Resolved merge conflict between feature1 and feature2"
+
+# Test
+node App.js
+
+# Push to GitHub
+git remote add origin https://github.com/yourusername/GitConflictDemo.git
+git branch -M main
+git push -u origin main
